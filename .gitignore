@@ -1,0 +1,12 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+
+# builds
+/dist/
+*.tgz
+
+# misc
+.DS_Store
