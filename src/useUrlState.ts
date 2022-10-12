@@ -2,6 +2,7 @@ import { useBatchRouter } from "next-batch-router";
 import { useRouter } from "next/router";
 import React from "react";
 import { BatchRouterQueryValue, HistoryOptions, Serializers, TransitionOptions } from "./defs";
+import { defaultSerializer } from "./utils";
 
 export interface UseUrlStateOptions<T> extends Serializers<T> {
     /**
@@ -48,7 +49,7 @@ export function useUrlState<T>(
         history = "replace",
         dynamic = false,
         parse = (x) => (x === undefined ? null : x) as T,
-        serialize = (x) => (Array.isArray(x) ? x.map(String) : String(x)),
+        serialize = defaultSerializer,
     }: Partial<UseUrlStateOptions<T>> = {}
 ): UseUrlStateReturn<T> {
     const router = useRouter();
@@ -72,12 +73,13 @@ export function useUrlState<T>(
             transitionOptions?: TransitionOptions
         ) => {
             const queryUpdater = isUpdaterFunction(stateUpdater)
-                ? (prev: Record<string, BatchRouterQueryValue | undefined>) => {
-                      const val = prev[key];
-                      const stringVal = Array.isArray(val) ? val!.map(String) : String(val);
+                ? (query: Record<string, BatchRouterQueryValue | undefined>) => {
+                      const prev = query[key];
+                      // Turn BatchRouterQueryValue into string | string[] | undefined to be put into parse.
+                      const prevString = Array.isArray(prev) ? prev!.map(String) : String(prev);
                       return {
-                          ...prev,
-                          [key]: serialize(stateUpdater(parse(stringVal))),
+                          ...query,
+                          [key]: serialize(stateUpdater(parse(prevString))),
                       };
                   }
                 : { [key]: serialize(stateUpdater) };

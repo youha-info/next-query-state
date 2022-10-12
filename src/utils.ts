@@ -7,3 +7,5 @@ export function firstParam(v: string | string[] | undefined): string | undefined
 export function firstParam(v: string | string[] | undefined): string | undefined {
     return Array.isArray(v) ? v[0] : v;
 }
+
+export const defaultSerializer = (x: any) => (Array.isArray(x) ? x.map(String) : String(x));
