@@ -8,7 +8,14 @@ export type TransitionOptions = Parameters<BatchRouterCore["push"]>[2];
 export type HistoryOptions = "replace" | "push";
 
 // TODO: Use definition from next-batch-router
-export type BatchRouterQueryValue = string | number | boolean | string[] | number[] | boolean[] | null;
+export type BatchRouterQueryValue =
+    | string
+    | number
+    | boolean
+    | string[]
+    | number[]
+    | boolean[]
+    | null;
 
 /**
  * Parse and serializes between batch router interface and useUrlState interface.
