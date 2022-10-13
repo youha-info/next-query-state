@@ -1,7 +1,7 @@
 {
-  "name": "next-url-state",
+  "name": "next-query-state",
   "version": "0.0.1",
-  "repository": "https://github.com/youha-info/next-url-state",
+  "repository": "https://github.com/youha-info/next-query-state",
   "keywords": [
     "nextjs",
     "query",
@@ -14,9 +14,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/youha-info/next-url-state/issues"
+    "url": "https://github.com/youha-info/next-query-state/issues"
   },
-  "homepage": "https://github.com/youha-info/next-url-state",
+  "homepage": "https://github.com/youha-info/next-query-state",
   "scripts": {
     "clean": "rimraf dist",
     "build": "yarn clean && rollup -c",

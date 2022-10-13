@@ -18,7 +18,7 @@ export type BatchRouterQueryValue =
     | null;
 
 /**
- * Parse and serializes between batch router interface and useUrlState interface.
+ * Parse and serializes between batch router interface and useQueryState interface.
  * T may contain null or undefined depending on Serializer.
  */
 export type Serializers<T> = {

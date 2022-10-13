@@ -1,8 +1,8 @@
 import { nullableQueryTypes } from "src/nullableQueryTypes";
-import { useUrlState } from "src/useUrlState";
+import { useQueryState } from "src/useQueryState";
 
 export default function TestPage() {
-    const [value, set] = useUrlState("somekey", nullableQueryTypes.string);
+    const [value, set] = useQueryState("somekey", nullableQueryTypes.string);
 
     return (
         <div>

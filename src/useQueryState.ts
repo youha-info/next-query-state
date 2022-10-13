@@ -4,7 +4,7 @@ import React from "react";
 import { BatchRouterQueryValue, HistoryOptions, Serializers, TransitionOptions } from "./defs";
 import { defaultSerializer } from "./utils";
 
-export interface UseUrlStateOptions<T> extends Serializers<T> {
+export interface UseQueryStateOptions<T> extends Serializers<T> {
     /**
      * The operation to use on state updates. Defaults to `replace`.
      */
@@ -22,15 +22,15 @@ export interface UseUrlStateOptions<T> extends Serializers<T> {
     dynamic?: boolean;
 }
 
-export type SetUrlStateOptions = {
+export type SetQueryStateOptions = {
     history?: HistoryOptions;
 };
 
-export type UseUrlStateReturn<T> = [
+export type UseQueryStateReturn<T> = [
     T,
     (
         value: T | ((prev: T) => T),
-        options?: SetUrlStateOptions,
+        options?: SetQueryStateOptions,
         transitionOptions?: TransitionOptions
     ) => void
 ];
@@ -38,20 +38,20 @@ export type UseUrlStateReturn<T> = [
 /** Variation with no parser, serializer.
  * Uses default serializer of type `string | string[] | null`
  */
-export function useUrlState(
+export function useQueryState(
     key: string,
     options?: { history?: HistoryOptions; dynamic?: boolean }
-): UseUrlStateReturn<string | string[] | null>;
-export function useUrlState<T>(key: string, options: UseUrlStateOptions<T>): UseUrlStateReturn<T>;
-export function useUrlState<T>(
+): UseQueryStateReturn<string | string[] | null>;
+export function useQueryState<T>(key: string, options: UseQueryStateOptions<T>): UseQueryStateReturn<T>;
+export function useQueryState<T>(
     key: string,
     {
         history = "replace",
         dynamic = false,
         parse = (x) => (x === undefined ? null : x) as T,
         serialize = defaultSerializer,
-    }: Partial<UseUrlStateOptions<T>> = {}
-): UseUrlStateReturn<T> {
+    }: Partial<UseQueryStateOptions<T>> = {}
+): UseQueryStateReturn<T> {
     const router = useRouter();
     const batchRouter = useBatchRouter();
 
@@ -69,7 +69,7 @@ export function useUrlState<T>(
     const update = React.useCallback(
         (
             stateUpdater: T | ((prev: T) => T),
-            options?: SetUrlStateOptions,
+            options?: SetQueryStateOptions,
             transitionOptions?: TransitionOptions
         ) => {
             const queryUpdater = isUpdaterFunction(stateUpdater)
