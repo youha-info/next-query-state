@@ -34,7 +34,7 @@
     "dist"
   ],
   "dependencies": {
-    "next-batch-router": "^0.0.1"
+    "next-batch-router": "^0.0.2"
   },
   "peerDependencies": {
     "next": "*",

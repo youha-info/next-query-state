@@ -1,6 +1,12 @@
 import { useBatchRouter } from "next-batch-router";
 import { useRouter } from "next/router";
-import type { BatchRouterQueryValue, HistoryOptions, Serializers, TransitionOptions } from "./defs";
+import type {
+    HistoryOptions,
+    NextQueryValue,
+    Serializers,
+    TransitionOptions,
+    WriteQueryValue,
+} from "./defs";
 import { defaultSerializer } from "./utils";
 
 export type UseQueryStatesKeyMap<KeyMap = any> = {
@@ -47,35 +53,18 @@ export function useQueryStates<KeyMap extends UseQueryStatesKeyMap>(
     const router = useRouter();
     const batchRouter = useBatchRouter();
 
-    type V = Values<KeyMap>;
-
     // Parse query into values
-    const values: V = {} as V;
-    for (const key of Object.keys(keys))
-        values[key as keyof V] = keys[key].parse(router.query[key]);
-
-    /** Serialize values object */
-    const serialize = (vals: Partial<V>) => {
-        const serialized: Record<string, BatchRouterQueryValue> = {};
-        for (const key of Object.keys(keys))
-            if (key in vals) serialized[key] = (keys[key].serialize || defaultSerializer)(vals);
-        return serialized;
-    };
+    const values = parseObject(router.query, keys);
 
     // Update function
     const update: SetValues<KeyMap> = (stateUpdater, options, transitionOptions) => {
         const queryUpdater = isUpdaterFunction<KeyMap>(stateUpdater)
-            ? (query: Record<string, BatchRouterQueryValue | undefined>) => {
-                  const prev: V = {} as V;
-                  for (const key of Object.keys(keys)) {
-                      const val = query[key];
-                      const stringVal = Array.isArray(val) ? val!.map(String) : String(val);
-                      prev[key as keyof V] = keys[key].parse(stringVal);
-                  }
+            ? (prevObj: Record<string, NextQueryValue>) => {
+                  const prev = parseObject(prevObj, keys);
                   const updated = stateUpdater(prev);
-                  return { ...query, ...serialize(updated) };
+                  return { ...prevObj, ...serializeAndRemoveUndefined(updated, keys) };
               }
-            : serialize(stateUpdater);
+            : serializeAndRemoveUndefined(stateUpdater, keys);
         const historyMode = options?.history || history;
         if (historyMode === "push")
             return batchRouter.push({ query: queryUpdater }, undefined, transitionOptions);
@@ -85,9 +74,32 @@ export function useQueryStates<KeyMap extends UseQueryStatesKeyMap>(
     return [values, update];
 }
 
-
 function isUpdaterFunction<KeyMap extends UseQueryStatesKeyMap>(
     input: any
 ): input is UpdaterFn<KeyMap> {
     return typeof input === "function";
+}
+
+function parseObject<KeyMap extends UseQueryStatesKeyMap>(
+    query: Record<string, NextQueryValue>,
+    keys: KeyMap
+) {
+    type V = Values<KeyMap>;
+    const values: V = {} as V;
+    for (const [k, v] of Object.entries(keys)) values[k as keyof V] = v.parse(query[k]);
+    return values;
+}
+
+function serializeAndRemoveUndefined<KeyMap extends UseQueryStatesKeyMap>(
+    vals: Partial<Values<KeyMap>>,
+    keys: KeyMap
+) {
+    const serialized: Record<string, WriteQueryValue> = {};
+    for (const [k, v] of Object.entries(keys))
+        if (k in vals) {
+            const serializedVal = (v.serialize || defaultSerializer)(vals);
+            if (serializedVal !== undefined) serialized[k] = serializedVal;
+        }
+
+    return serialized;
 }

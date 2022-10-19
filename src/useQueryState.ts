@@ -1,7 +1,7 @@
 import { useBatchRouter } from "next-batch-router";
 import { useRouter } from "next/router";
 import React from "react";
-import { BatchRouterQueryValue, HistoryOptions, Serializers, TransitionOptions } from "./defs";
+import { HistoryOptions, NextQueryValue, Serializers, TransitionOptions } from "./defs";
 import { defaultSerializer } from "./utils";
 
 export interface UseQueryStateOptions<T> extends Serializers<T> {
@@ -42,7 +42,10 @@ export function useQueryState(
     key: string,
     options?: { history?: HistoryOptions; dynamic?: boolean }
 ): UseQueryStateReturn<string | string[] | null>;
-export function useQueryState<T>(key: string, options: UseQueryStateOptions<T>): UseQueryStateReturn<T>;
+export function useQueryState<T>(
+    key: string,
+    options: UseQueryStateOptions<T>
+): UseQueryStateReturn<T>;
 export function useQueryState<T>(
     key: string,
     {
@@ -73,14 +76,11 @@ export function useQueryState<T>(
             transitionOptions?: TransitionOptions
         ) => {
             const queryUpdater = isUpdaterFunction(stateUpdater)
-                ? (query: Record<string, BatchRouterQueryValue | undefined>) => {
-                      const prev = query[key];
-                      // Turn BatchRouterQueryValue into string | string[] | undefined to be put into parse.
-                      const prevString = Array.isArray(prev) ? prev!.map(String) : String(prev);
-                      return {
-                          ...query,
-                          [key]: serialize(stateUpdater(parse(prevString))),
-                      };
+                ? (prevObj: Record<string, NextQueryValue>) => {
+                      const newVal = serialize(stateUpdater(parse(prevObj[key])));
+                      // Manually merge. Keep prev valud if new is undefined.
+                      if (newVal !== undefined) return { ...prevObj, [key]: newVal };
+                      return prevObj;
                   }
                 : { [key]: serialize(stateUpdater) };
 

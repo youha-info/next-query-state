@@ -1,29 +1,18 @@
-import { BatchRouterCore } from "next-batch-router/dist/cjs/BatchRouterCore";
+import { BatchRouterCore, BatchRouterTypes } from "next-batch-router/dist/cjs/BatchRouterCore";
 import { firstParam } from "./utils";
 
-// BatchRouter does not export the TransitionsOption interface,
-// but we can get it from where it's used:
-export type TransitionOptions = Parameters<BatchRouterCore["push"]>[2];
-
+export type TransitionOptions = BatchRouterTypes.TransitionOptions;
 export type HistoryOptions = "replace" | "push";
-
-// TODO: Use definition from next-batch-router
-export type BatchRouterQueryValue =
-    | string
-    | number
-    | boolean
-    | string[]
-    | number[]
-    | boolean[]
-    | null;
+export type NextQueryValue = BatchRouterTypes.NextQueryValue;
+export type WriteQueryValue = BatchRouterTypes.WriteQueryValue;
 
 /**
  * Parse and serializes between batch router interface and useQueryState interface.
  * T may contain null or undefined depending on Serializer.
  */
 export type Serializers<T> = {
-    parse: (value: string | string[] | undefined) => T;
-    serialize?: (value: T) => BatchRouterQueryValue;
+    parse: (value: NextQueryValue) => T;
+    serialize?: (value: T) => WriteQueryValue;
 };
 
 export type SerializersWithDefaultFactory<T, NoDefault = T | null> = Serializers<NoDefault> & {
@@ -159,7 +148,7 @@ export const queryTypes: QueryTypeMap = {
         },
     },
     stringEnum<Enum extends string>(validValues: Enum[]) {
-        const parse = (v: string | string[] | undefined) => {
+        const parse = (v: NextQueryValue) => {
             if (v !== undefined) {
                 const asEnum = firstParam(v) as Enum;
                 if (validValues.includes(asEnum)) return asEnum;
@@ -178,7 +167,7 @@ export const queryTypes: QueryTypeMap = {
         };
     },
     json<T>() {
-        const parse = (v: string | string[] | undefined) => {
+        const parse = (v: NextQueryValue) => {
             if (v === undefined) return null;
             try {
                 return JSON.parse(firstParam(v)) as T;
@@ -199,7 +188,7 @@ export const queryTypes: QueryTypeMap = {
     },
     // TODO: check if encodeURI needed
     array(itemSerializers, separator = ",") {
-        const parse = (v: string | string[] | undefined) => {
+        const parse = (v: NextQueryValue) => {
             if (v === undefined) return null;
             type ItemType = ReturnType<typeof itemSerializers.parse>;
             const parsedValues = firstParam(v)
