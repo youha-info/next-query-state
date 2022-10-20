@@ -24,12 +24,15 @@ export type Values<T extends UseQueryStatesKeyMap> = {
     [K in keyof T]: ReturnType<T[K]["parse"]>;
 };
 
-type UpdaterFn<T extends UseQueryStatesKeyMap> = (old: Values<T>) => Partial<Values<T>>;
+export type WriteValues<T extends UseQueryStatesKeyMap> = {
+    [K in keyof T]: T[K]["serialize"] extends Function ? Parameters<T[K]["serialize"]>[0] : any;
+};
+
+type UpdaterFn<T extends UseQueryStatesKeyMap> = (old: Values<T>) => Partial<WriteValues<T>>;
 
 export type SetValues<T extends UseQueryStatesKeyMap> = (
     stateUpdater: Partial<Values<T>> | UpdaterFn<T>,
-    options?: { history: HistoryOptions },
-    transitionOptions?: TransitionOptions
+    options?: { history?: HistoryOptions } & TransitionOptions
 ) => void;
 
 export type UseQueryStatesReturn<T extends UseQueryStatesKeyMap> = [Values<T>, SetValues<T>];
@@ -57,7 +60,10 @@ export function useQueryStates<KeyMap extends UseQueryStatesKeyMap>(
     const values = parseObject(router.query, keys);
 
     // Update function
-    const update: SetValues<KeyMap> = (stateUpdater, options, transitionOptions) => {
+    const update: SetValues<KeyMap> = (
+        stateUpdater,
+        { history: historyOverride, ...transitionOptions } = {}
+    ) => {
         const queryUpdater = isUpdaterFunction<KeyMap>(stateUpdater)
             ? (prevObj: Record<string, NextQueryValue>) => {
                   const prev = parseObject(prevObj, keys);
@@ -65,7 +71,7 @@ export function useQueryStates<KeyMap extends UseQueryStatesKeyMap>(
                   return { ...prevObj, ...serializeAndRemoveUndefined(updated, keys) };
               }
             : serializeAndRemoveUndefined(stateUpdater, keys);
-        const historyMode = options?.history || history;
+        const historyMode = historyOverride || history;
         if (historyMode === "push")
             return batchRouter.push({ query: queryUpdater }, undefined, transitionOptions);
         else return batchRouter.replace({ query: queryUpdater }, undefined, transitionOptions);

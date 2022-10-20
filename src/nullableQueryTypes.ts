@@ -1,4 +1,4 @@
-import { Serializers } from "./defs";
+import { Serializers, WriteQueryValue } from "./defs";
 import { firstParam } from "./utils";
 
 export type NullableSerializersWithDefaultFactory<
@@ -55,17 +55,27 @@ export type NullableQueryTypeMap = Readonly<{
      * @param validValues The values you want to accept
      */
     stringEnum<Enum extends string>(
-        validValues: Enum[]
+        validValues: Enum[] | readonly Enum[]
     ): NullableSerializersWithDefaultFactory<Enum | null>;
+
+    /**
+     * List of items represented with duplicate keys.
+     * Items are URI-encoded for safety, so they may not look nice in the URL.
+     *
+     * @param itemSerializers Serializers for each individual item in the array
+     */
+    array<ItemType>(
+        itemSerializers: Serializers<ItemType>
+    ): NullableSerializersWithDefaultFactory<ItemType[] | null>;
 
     /**
      * A comma-separated list of items.
      * Items are URI-encoded for safety, so they may not look nice in the URL.
      *
      * @param itemSerializers Serializers for each individual item in the array
-     * @param separator The character to use to separate items (default ',')
+     * @param separator The character to use to separate items (default ',' which encodes into '%2C')
      */
-    array<ItemType>(
+    delimitedArray<ItemType>(
         itemSerializers: Serializers<ItemType>,
         separator?: string
     ): NullableSerializersWithDefaultFactory<ItemType[] | null>;
@@ -78,7 +88,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         withDefault(defaultValue) {
             return {
                 parse: (v) => (v === undefined ? defaultValue : firstParam(v)),
-                serialize: this.serialize
+                serialize: this.serialize,
             };
         },
     },
@@ -165,7 +175,38 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
             },
         };
     },
-    array(itemSerializers, separator = ",") {
+    array(itemSerializers) {
+        const parse = (v: string | string[] | undefined) => {
+            if (v === undefined) return undefined;
+            if (v === "\0") return null;
+            type ItemType = ReturnType<typeof itemSerializers.parse>;
+            const arr = Array.isArray(v) ? v : [v];
+            const parsedValues = arr
+                .map(itemSerializers.parse)
+                .filter((x) => x !== undefined) as ItemType[];
+            return parsedValues.length ? parsedValues : undefined;
+        };
+        return {
+            parse,
+            serialize: (v) => {
+                if (v === undefined) return null;
+                if (v === null) return "\0";
+                return v
+                    .map(itemSerializers.serialize || String)
+                    .filter((v) => v != null) as WriteQueryValue;
+            },
+            withDefault(defaultValue) {
+                return {
+                    parse: (v) => {
+                        const value = parse(v);
+                        return value === undefined ? defaultValue : value;
+                    },
+                    serialize: this.serialize,
+                };
+            },
+        };
+    },
+    delimitedArray(itemSerializers, separator = ",") {
         const parse = (v: string | string[] | undefined) => {
             if (v === undefined) return undefined;
             if (v === "\0") return null;

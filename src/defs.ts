@@ -1,4 +1,4 @@
-import { BatchRouterCore, BatchRouterTypes } from "next-batch-router/dist/cjs/BatchRouterCore";
+import { BatchRouterTypes } from "next-batch-router/dist/cjs/BatchRouterCore";
 import { firstParam } from "./utils";
 
 export type TransitionOptions = BatchRouterTypes.TransitionOptions;
@@ -10,13 +10,16 @@ export type WriteQueryValue = BatchRouterTypes.WriteQueryValue;
  * Parse and serializes between batch router interface and useQueryState interface.
  * T may contain null or undefined depending on Serializer.
  */
-export type Serializers<T> = {
+export type Serializers<T, WT = T> = {
     parse: (value: NextQueryValue) => T;
-    serialize?: (value: T) => WriteQueryValue;
+    serialize?: (value: WT) => WriteQueryValue;
 };
 
-export type SerializersWithDefaultFactory<T, NoDefault = T | null> = Serializers<NoDefault> & {
-    withDefault: (defaultValue: T) => Serializers<T>;
+export type SerializersWithDefaultFactory<T, NoDefault = T | null> = Serializers<
+    NoDefault,
+    NoDefault | null | undefined
+> & {
+    withDefault: (defaultValue: T) => Serializers<T, T | null | undefined>;
 };
 
 export type QueryTypeMap = Readonly<{
@@ -65,7 +68,9 @@ export type QueryTypeMap = Readonly<{
      *
      * @param validValues The values you want to accept
      */
-    stringEnum<Enum extends string>(validValues: Enum[]): SerializersWithDefaultFactory<Enum>;
+    stringEnum<Enum extends string>(
+        validValues: Enum[] | readonly Enum[]
+    ): SerializersWithDefaultFactory<Enum>;
 
     /**
      * Encode any object shape into the querystring value as JSON.
@@ -76,13 +81,23 @@ export type QueryTypeMap = Readonly<{
     json<T>(): SerializersWithDefaultFactory<T>;
 
     /**
+     * List of items represented with duplicate keys.
+     * Items are URI-encoded for safety, so they may not look nice in the URL.
+     *
+     * @param itemSerializers Serializers for each individual item in the array
+     */
+    array<ItemType>(
+        itemSerializers: Serializers<ItemType>
+    ): SerializersWithDefaultFactory<ItemType[]>;
+
+    /**
      * A comma-separated list of items.
      * Items are URI-encoded for safety, so they may not look nice in the URL.
      *
      * @param itemSerializers Serializers for each individual item in the array
      * @param separator The character to use to separate items (default ',')
      */
-    array<ItemType>(
+    delimitedArray<ItemType>(
         itemSerializers: Serializers<ItemType>,
         separator?: string
     ): SerializersWithDefaultFactory<ItemType[]>;
@@ -99,7 +114,7 @@ export const queryTypes: QueryTypeMap = {
     },
     integer: {
         parse: (v) => (v === undefined ? null : parseInt(firstParam(v))),
-        serialize: (v) => (v === null ? null : Math.round(v).toFixed()),
+        serialize: (v) => (v == null ? v : Math.round(v).toFixed()),
         withDefault(defaultValue) {
             return {
                 parse: (v) => (v === undefined ? defaultValue : parseInt(firstParam(v))),
@@ -109,7 +124,7 @@ export const queryTypes: QueryTypeMap = {
     },
     float: {
         parse: (v) => (v === undefined ? null : parseFloat(firstParam(v))),
-        serialize: (v) => (v === null ? null : v.toString()),
+        serialize: (v) => (v == null ? v : v.toString()),
         withDefault(defaultValue) {
             return {
                 parse: (v) => (v === undefined ? defaultValue : parseFloat(firstParam(v))),
@@ -119,7 +134,7 @@ export const queryTypes: QueryTypeMap = {
     },
     boolean: {
         parse: (v) => (v === undefined ? null : v === "true"),
-        serialize: (v) => (v === null ? null : v ? "true" : "false"),
+        serialize: (v) => (v == null ? v : v ? "true" : "false"),
         withDefault(defaultValue) {
             return {
                 parse: (v) => (v === undefined ? defaultValue : v === "true"),
@@ -129,7 +144,7 @@ export const queryTypes: QueryTypeMap = {
     },
     timestamp: {
         parse: (v) => (v === undefined ? null : new Date(parseInt(firstParam(v)))),
-        serialize: (v) => (v === null ? null : v.valueOf().toString()),
+        serialize: (v) => (v == null ? v : v.valueOf().toString()),
         withDefault(defaultValue) {
             return {
                 parse: (v) => (v === undefined ? defaultValue : new Date(parseInt(firstParam(v)))),
@@ -139,7 +154,7 @@ export const queryTypes: QueryTypeMap = {
     },
     isoDateTime: {
         parse: (v) => (v === undefined ? null : new Date(firstParam(v))),
-        serialize: (v) => (v === null ? null : v.toISOString()),
+        serialize: (v) => (v == null ? v : v.toISOString()),
         withDefault(defaultValue) {
             return {
                 parse: (v) => (v === undefined ? defaultValue : new Date(firstParam(v))),
@@ -157,7 +172,7 @@ export const queryTypes: QueryTypeMap = {
         };
         return {
             parse,
-            serialize: (value) => (value === null ? null : value.toString()),
+            serialize: (v) => (v == null ? v : v.toString()),
             withDefault(defaultValue) {
                 return {
                     parse: (v) => parse(v) ?? defaultValue,
@@ -177,7 +192,7 @@ export const queryTypes: QueryTypeMap = {
         };
         return {
             parse,
-            serialize: (value) => (value === null ? null : JSON.stringify(value)),
+            serialize: (v) => (v == null ? v : JSON.stringify(v)) as string | null | undefined,
             withDefault(defaultValue) {
                 return {
                     parse: (v) => parse(v) ?? defaultValue,
@@ -186,8 +201,33 @@ export const queryTypes: QueryTypeMap = {
             },
         };
     },
-    // TODO: check if encodeURI needed
-    array(itemSerializers, separator = ",") {
+    array(itemSerializers) {
+        const parse = (v: NextQueryValue) => {
+            if (v === undefined) return null;
+            type ItemType = ReturnType<typeof itemSerializers.parse>;
+            const arr = Array.isArray(v) ? v : [v];
+            const parsedValues = arr
+                .map(itemSerializers.parse)
+                .filter((x) => x !== null) as ItemType[];
+            return parsedValues.length ? parsedValues : null;
+        };
+        return {
+            parse,
+            serialize: (v) => {
+                if (v == null) return v;
+                return v
+                    .map(itemSerializers.serialize || String)
+                    .filter((v) => v != null) as WriteQueryValue;
+            },
+            withDefault(defaultValue) {
+                return {
+                    parse: (v) => parse(v) ?? defaultValue,
+                    serialize: this.serialize,
+                };
+            },
+        };
+    },
+    delimitedArray(itemSerializers, separator = ",") {
         const parse = (v: NextQueryValue) => {
             if (v === undefined) return null;
             type ItemType = ReturnType<typeof itemSerializers.parse>;
@@ -200,7 +240,7 @@ export const queryTypes: QueryTypeMap = {
         return {
             parse,
             serialize: (v) => {
-                if (v === null) return null;
+                if (v == null) return v;
                 return v.map(itemSerializers.serialize || String).join(separator);
             },
             withDefault(defaultValue) {

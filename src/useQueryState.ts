@@ -2,9 +2,9 @@ import { useBatchRouter } from "next-batch-router";
 import { useRouter } from "next/router";
 import React from "react";
 import { HistoryOptions, NextQueryValue, Serializers, TransitionOptions } from "./defs";
-import { defaultSerializer } from "./utils";
+import { defaultSerializer, firstStringParser } from "./utils";
 
-export interface UseQueryStateOptions<T> extends Serializers<T> {
+type UseQueryStateOptions = {
     /**
      * The operation to use on state updates. Defaults to `replace`.
      */
@@ -20,16 +20,16 @@ export interface UseQueryStateOptions<T> extends Serializers<T> {
      * which might have different types or different default values.
      */
     dynamic?: boolean;
-}
+};
 
-export type SetQueryStateOptions = {
+type SetQueryStateOptions = {
     history?: HistoryOptions;
 };
 
-export type UseQueryStateReturn<T> = [
+type UseQueryStateReturn<T, WT> = [
     T,
     (
-        value: T | ((prev: T) => T),
+        value: WT | ((prev: T) => WT),
         options?: SetQueryStateOptions,
         transitionOptions?: TransitionOptions
     ) => void
@@ -39,22 +39,21 @@ export type UseQueryStateReturn<T> = [
  * Uses default serializer of type `string | string[] | null`
  */
 export function useQueryState(
+    key: string
+): UseQueryStateReturn<string | string[] | null, string | string[] | null | undefined>;
+export function useQueryState<T, WT>(
     key: string,
-    options?: { history?: HistoryOptions; dynamic?: boolean }
-): UseQueryStateReturn<string | string[] | null>;
-export function useQueryState<T>(
-    key: string,
-    options: UseQueryStateOptions<T>
-): UseQueryStateReturn<T>;
-export function useQueryState<T>(
+    serializers?: Serializers<T, WT>,
+    options?: UseQueryStateOptions
+): UseQueryStateReturn<T, WT>;
+export function useQueryState<T, WT>(
     key: string,
     {
-        history = "replace",
-        dynamic = false,
-        parse = (x) => (x === undefined ? null : x) as T,
+        parse = firstStringParser as (v: any) => T,
         serialize = defaultSerializer,
-    }: Partial<UseQueryStateOptions<T>> = {}
-): UseQueryStateReturn<T> {
+    }: Partial<Serializers<T, WT>> & UseQueryStateOptions = {},
+    { history = "replace", dynamic = false }: UseQueryStateOptions = {}
+): UseQueryStateReturn<T, WT> {
     const router = useRouter();
     const batchRouter = useBatchRouter();
 
@@ -71,9 +70,11 @@ export function useQueryState<T>(
 
     const update = React.useCallback(
         (
-            stateUpdater: T | ((prev: T) => T),
-            options?: SetQueryStateOptions,
-            transitionOptions?: TransitionOptions
+            stateUpdater: WT | ((prev: T) => WT),
+            {
+                history: historyOverride,
+                ...transitionOptions
+            }: SetQueryStateOptions & TransitionOptions = {}
         ) => {
             const queryUpdater = isUpdaterFunction(stateUpdater)
                 ? (prevObj: Record<string, NextQueryValue>) => {
@@ -84,7 +85,7 @@ export function useQueryState<T>(
                   }
                 : { [key]: serialize(stateUpdater) };
 
-            const historyMode = options?.history || history;
+            const historyMode = historyOverride || history;
             if (historyMode === "push")
                 return batchRouter.push({ query: queryUpdater }, undefined, transitionOptions);
             else return batchRouter.replace({ query: queryUpdater }, undefined, transitionOptions);
@@ -96,6 +97,6 @@ export function useQueryState<T>(
     return [value, update];
 }
 
-function isUpdaterFunction<T>(input: T | ((prev: T) => T)): input is (prev: T) => T {
+function isUpdaterFunction<T, WT>(input: WT | ((prev: T) => WT)): input is (prev: T) => WT {
     return typeof input === "function";
 }
