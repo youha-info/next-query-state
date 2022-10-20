@@ -81,9 +81,9 @@ Therefore to avoid hydration error, client must behave as if there is no query s
 
 If you don't want the default value to briefly show on first render, don't render the value or show placeholders when `router.isReady` is false.
 
-<br/>
-
 ---
+
+<br/>
 
 ## Installation
 
@@ -108,9 +108,9 @@ const MyApp = ({ Component, pageProps }) => (
 );
 ```
 
-<br/>
-
 ---
+
+<br/>
 
 ## Usage
 
@@ -160,10 +160,9 @@ export default function TestPage() {
 }
 ```
 
-<br/>
-
 ---
 
+<br/>
 
 ## Background on Types
 
