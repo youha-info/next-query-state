@@ -49,7 +49,7 @@ export function useQueryState<T, WT>(
 export function useQueryState<T, WT>(
     key: string,
     {
-        parse = firstStringParser as (v: any) => T,
+        parse = firstStringParser as unknown as (v: any) => T,
         serialize = defaultSerializer,
     }: Partial<Serializers<T, WT>> & UseQueryStateOptions = {},
     { history = "replace", dynamic = false }: UseQueryStateOptions = {}
