@@ -85,8 +85,6 @@ If you don't want the default value to briefly show on first render, don't rende
 
 ---
 
-<br/>
-
 ## Installation
 
 ```sh
@@ -113,8 +111,6 @@ const MyApp = ({ Component, pageProps }) => (
 <br/>
 
 ---
-
-<br/>
 
 ## Usage
 
@@ -168,11 +164,8 @@ export default function TestPage() {
 
 ---
 
-<br/>
 
-## Documentation
-
-### Background on Types
+## Background on Types
 
 Each query parameter has two types. `T` and `WT`, and it's converted from and to types of `next-batch-router`.
 
@@ -204,9 +197,9 @@ The types are converted in this direction, forming a loop: `NextQueryValue` -(pa
 
 <br/>
 
-### `useQueryState<T, WT>(key, serializers, options): [T, update<T, WT>]`
+## `useQueryState<T, WT>(key, serializers, options): [T, update<T, WT>]`
 
-#### Parameters
+### Parameters
 
 `key`: `string`
 
@@ -238,7 +231,7 @@ The types are converted in this direction, forming a loop: `NextQueryValue` -(pa
     -   Currently, stale updater function returned from the hook uses previously supplied parse and serialize functions,
         so you must always use update function freshly returned from the hook.
 
-#### Returns
+### Returns
 
 `value`: `T`
 
@@ -278,9 +271,11 @@ The types are converted in this direction, forming a loop: `NextQueryValue` -(pa
 
         -   Indicates locale of the new page. When merged, the last one will be applied.
 
-### Serializers Presets
+<br/>
 
-#### `queryTypes`
+## Serializers Presets
+
+### `queryTypes`
 
 `null` means no key in url. (`/?`)
 
@@ -292,7 +287,7 @@ When you use `withDefault()`, since there is a default value, `null` is excluded
 However, it still exists in `WT` so you can remove key from the URL to set value to default value.
 
 | Serializers                                | Type                          | Extra                                                                                  | Value example                   | URL example                         |
-|--------------------------------------------|-------------------------------|----------------------------------------------------------------------------------------|---------------------------------|-------------------------------------|
+| ------------------------------------------ | ----------------------------- | -------------------------------------------------------------------------------------- | ------------------------------- | ----------------------------------- |
 | string                                     | `string`                      |                                                                                        | "foo"                           | ?state=foo                          |
 | integer                                    | `number`                      | If set to non-integer value, rounded value is used.                                    | 123                             | ?state=123                          |
 | float                                      | `number`                      |                                                                                        | 12.3                            | ?state=12.3                         |
@@ -304,7 +299,7 @@ However, it still exists in `WT` so you can remove key from the URL to set value
 | array(itemSerializers)                     | `T[]`                         | Nested arrays unavailable.                                                             | [1,2,3]                         | ?state=1&state=2&state=3            |
 | delimitedArray(itemSerializers, separator) | `T[]`                         | Separator character inside value will cause bugs, and separator might get URL encoded. | [1,2,3]                         | ?state=1%2C2%2C3                    |
 
-#### `nullableQueryTypes`
+### `nullableQueryTypes`
 
 Experimental preset that allows `null` as a value, not as absense of value. `null` is encoded as `%00`.
 
@@ -319,7 +314,7 @@ However, it still exists in `WT` so you can remove key from the URL to set value
 
 <br/>
 
-### `useQueryStates<KeyMap>(keys, options): [Values, update<Values>]`
+## `useQueryStates<KeyMap>(keys, options): [Values, update<Values>]`
 
 Synchronise multiple query string arguments at once.
 
@@ -329,7 +324,7 @@ For most cases, using `useQueryState` is recommended, and `useQueryStates` is in
 1. The keys are changed at runtime. (Since conditional use of useQueryState is illegal)
 2. New value is determined by multiple keys while doing functional update.
 
-#### Parameters
+### Parameters
 
 `keys`: `Record<string, Serializers>`
 
@@ -343,7 +338,7 @@ For most cases, using `useQueryState` is recommended, and `useQueryStates` is in
 -   `history`?: `"push" | "replace"`
     -   Equal to `useQueryState`
 
-#### Returns
+### Returns
 
 `values`: `Values`
 
