@@ -6,7 +6,7 @@ import peerDepsExternal from "rollup-plugin-peer-deps-external";
 
 const config = [
     {
-        input: "src/index.ts",
+        input: ["src/index.ts", "src/nullableQueryTypes.ts"],
         output: [
             {
                 sourcemap: true,
