@@ -17,7 +17,7 @@ const state = parseInt(router.query.state) || 0;
 router.push({ query: { ...router.query, state: 10 } });
 ```
 
-You can use just as if you would use `useState`.
+You can manage state similar to `React.useState`.
 
 ```ts
 const [state, setState] = useQueryState("state", queryTypes.integer.withDefault(0));
@@ -321,7 +321,7 @@ This is similar to `useQueryState`, but without memoization and is more dynamic.
 For most cases, using `useQueryState` is recommended, and `useQueryStates` is intended for below cases.
 
 1. The keys are changed at runtime. (Since conditional use of useQueryState is illegal)
-2. New value is determined by multiple keys while doing functional update.
+2. New value is determined by other params while doing functional update.
 
 ### Parameters
 
