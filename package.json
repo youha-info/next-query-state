@@ -38,13 +38,9 @@
     "next-batch-router": "^0.0.2"
   },
   "peerDependencies": {
-    "next": "*",
-    "react": ">=16.8"
+    "next": "*"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.9",
-    "@babel/preset-react": "^7.18.6",
-    "@rollup/plugin-babel": "^5.3.1",
     "@rollup/plugin-commonjs": "^22.0.1",
     "@types/node": "^18.0.6",
     "@types/react": "^18.0.15",

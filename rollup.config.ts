@@ -1,5 +1,3 @@
-import babel from "@rollup/plugin-babel";
-
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
@@ -22,11 +20,6 @@ const config = [
         plugins: [
             peerDepsExternal(),
             typescript({ tsconfig: "./tsconfig.build.json" }),
-            babel({
-                babelHelpers: "bundled",
-                presets: ["@babel/preset-react"],
-                extensions: [".js", ".ts", ".jsx", ".tsx"],
-            }),
             commonjs({ include: "node_modules/**" }),
         ],
     },
