@@ -3,6 +3,7 @@ import { firstParam } from "./utils";
 
 export type TransitionOptions = BatchRouterTypes.TransitionOptions;
 export type HistoryOptions = "replace" | "push";
+export type UpdateOptions = { history?: HistoryOptions } & TransitionOptions;
 export type NextQueryValue = BatchRouterTypes.NextQueryValue;
 export type WriteQueryValue = BatchRouterTypes.WriteQueryValue;
 

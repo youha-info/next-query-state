@@ -4,7 +4,7 @@ import type {
     HistoryOptions,
     NextQueryValue,
     Serializers,
-    TransitionOptions,
+    UpdateOptions,
     WriteQueryValue,
 } from "./defs";
 import { defaultSerializer } from "./utils";
@@ -32,7 +32,7 @@ type UpdaterFn<T extends UseQueryStatesKeyMap> = (old: Values<T>) => Partial<Wri
 
 export type SetValues<T extends UseQueryStatesKeyMap> = (
     stateUpdater: Partial<Values<T>> | UpdaterFn<T>,
-    options?: { history?: HistoryOptions } & TransitionOptions
+    options?: UpdateOptions
 ) => void;
 
 export type UseQueryStatesReturn<T extends UseQueryStatesKeyMap> = [Values<T>, SetValues<T>];

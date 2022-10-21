@@ -1,7 +1,13 @@
 import { useBatchRouter } from "next-batch-router";
 import { useRouter } from "next/router";
 import React from "react";
-import { HistoryOptions, NextQueryValue, Serializers, TransitionOptions } from "./defs";
+import {
+    HistoryOptions,
+    NextQueryValue,
+    Serializers,
+    TransitionOptions,
+    UpdateOptions,
+} from "./defs";
 import { defaultSerializer, firstStringParser } from "./utils";
 
 type UseQueryStateOptions = {
@@ -22,17 +28,9 @@ type UseQueryStateOptions = {
     dynamic?: boolean;
 };
 
-type SetQueryStateOptions = {
-    history?: HistoryOptions;
-};
-
 type UseQueryStateReturn<T, WT> = [
     T,
-    (
-        value: WT | ((prev: T) => WT),
-        options?: SetQueryStateOptions,
-        transitionOptions?: TransitionOptions
-    ) => void
+    (value: WT | ((prev: T) => WT), options?: UpdateOptions) => Promise<boolean | undefined>
 ];
 
 /** Variation with no parser, serializer.
@@ -71,10 +69,7 @@ export function useQueryState<T, WT>(
     const update = React.useCallback(
         (
             stateUpdater: WT | ((prev: T) => WT),
-            {
-                history: historyOverride,
-                ...transitionOptions
-            }: SetQueryStateOptions & TransitionOptions = {}
+            { history: historyOverride, ...transitionOptions }: UpdateOptions = {}
         ) => {
             const queryUpdater = isUpdaterFunction(stateUpdater)
                 ? (prevObj: Record<string, NextQueryValue>) => {
