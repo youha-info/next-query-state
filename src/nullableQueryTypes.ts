@@ -93,60 +93,51 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         },
     },
     integer: {
-        parse: (v) => (v === undefined ? undefined : v === "\0" ? null : parseInt(firstParam(v))),
+        parse: (v) => (v === "\0" ? null : parseIntOrUndef(v)),
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : Math.round(v).toFixed()),
         withDefault(defaultValue) {
             return {
-                parse: (v) =>
-                    v === undefined ? defaultValue : v === "\0" ? null : parseInt(firstParam(v)),
+                parse: (v) => (v === "\0" ? null : parseIntOrUndef(v) ?? defaultValue),
                 serialize: this.serialize,
             };
         },
     },
     float: {
-        parse: (v) => (v === undefined ? undefined : v === "\0" ? null : parseFloat(firstParam(v))),
+        parse: (v) => (v === "\0" ? null : parseFloatOrUndef(v)),
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : v.toString()),
         withDefault(defaultValue) {
             return {
-                parse: (v) =>
-                    v === undefined ? defaultValue : v === "\0" ? null : parseFloat(firstParam(v)),
+                parse: (v) => (v === "\0" ? null : parseFloatOrUndef(v)) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
     },
     boolean: {
-        parse: (v) => (v === undefined ? undefined : v === "\0" ? null : v === "true"),
+        parse: (v) => (v === "\0" ? null : parseBooleanOrUndef(v)),
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : v ? "true" : "false"),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === undefined ? defaultValue : v === "\0" ? null : v === "true"),
+                parse: (v) => (v === "\0" ? null : parseBooleanOrUndef(v) ?? defaultValue),
                 serialize: this.serialize,
             };
         },
     },
     timestamp: {
-        parse: (v) =>
-            v === undefined ? undefined : v === "\0" ? null : new Date(parseInt(firstParam(v))),
+        parse: (v) => (v === "\0" ? null : parseTimestampOrUndef(v)),
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : v.valueOf().toString()),
         withDefault(defaultValue) {
             return {
-                parse: (v) =>
-                    v === undefined
-                        ? defaultValue
-                        : v === "\0"
-                        ? null
-                        : new Date(parseInt(firstParam(v))),
+                parse: (v) => (v === "\0" ? null : parseTimestampOrUndef(v) ?? defaultValue),
                 serialize: this.serialize,
             };
         },
     },
     isoDateTime: {
-        parse: (v) => (v === undefined ? undefined : v === "\0" ? null : new Date(firstParam(v))),
+        parse: (v) => (v === "\0" ? null : parseIsoDateTimeOrUndef(v)),
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : v.toISOString()),
         withDefault(defaultValue) {
             return {
-                parse: (v) =>
-                    v === undefined ? defaultValue : v === "\0" ? null : new Date(firstParam(v)),
+                parse: (v) => (v === "\0" ? null : parseIsoDateTimeOrUndef(v) ?? defaultValue),
                 serialize: this.serialize,
             };
         },
@@ -236,3 +227,34 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         };
     },
 };
+
+function parseIntOrUndef(v: string | string[] | undefined) {
+    if (v === undefined) return undefined;
+    const parsed = parseInt(firstParam(v));
+    return isNaN(parsed) ? undefined : parsed;
+}
+
+function parseFloatOrUndef(v: string | string[] | undefined) {
+    if (v === undefined) return undefined;
+    const parsed = parseFloat(firstParam(v));
+    return isNaN(parsed) ? undefined : parsed;
+}
+
+function parseBooleanOrUndef(v: string | string[] | undefined) {
+    const first = firstParam(v);
+    if (first === "true") return true;
+    if (first === "false") return false;
+    return undefined;
+}
+
+function parseTimestampOrUndef(v: string | string[] | undefined) {
+    const timestamp = parseIntOrUndef(v);
+    return timestamp === undefined ? undefined : new Date(timestamp);
+}
+
+function parseIsoDateTimeOrUndef(v: string | string[] | undefined) {
+    // @ts-ignore
+    const dt = new Date(firstParam(v));
+    // @ts-ignore
+    return isNaN(dt) ? undefined : dt;
+}

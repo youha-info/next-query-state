@@ -114,51 +114,51 @@ export const queryTypes: QueryTypeMap = {
         },
     },
     integer: {
-        parse: (v) => (v === undefined ? null : parseInt(firstParam(v))),
+        parse: parseIntOrNull,
         serialize: (v) => (v == null ? v : Math.round(v).toFixed()),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === undefined ? defaultValue : parseInt(firstParam(v))),
+                parse: (v) => parseIntOrNull(v) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
     },
     float: {
-        parse: (v) => (v === undefined ? null : parseFloat(firstParam(v))),
+        parse: parseFloatOrNull,
         serialize: (v) => (v == null ? v : v.toString()),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === undefined ? defaultValue : parseFloat(firstParam(v))),
+                parse: (v) => parseFloatOrNull(v) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
     },
     boolean: {
-        parse: (v) => (v === undefined ? null : v === "true"),
+        parse: parseBooleanOrNull,
         serialize: (v) => (v == null ? v : v ? "true" : "false"),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === undefined ? defaultValue : v === "true"),
+                parse: (v) => parseBooleanOrNull(v) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
     },
     timestamp: {
-        parse: (v) => (v === undefined ? null : new Date(parseInt(firstParam(v)))),
+        parse: parseTimestampOrNull,
         serialize: (v) => (v == null ? v : v.valueOf().toString()),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === undefined ? defaultValue : new Date(parseInt(firstParam(v)))),
+                parse: (v) => parseTimestampOrNull(v) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
     },
     isoDateTime: {
-        parse: (v) => (v === undefined ? null : new Date(firstParam(v))),
+        parse: parseIsoDateTimeOrNull,
         serialize: (v) => (v == null ? v : v.toISOString()),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === undefined ? defaultValue : new Date(firstParam(v))),
+                parse: (v) => parseIsoDateTimeOrNull(v) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
@@ -253,3 +253,34 @@ export const queryTypes: QueryTypeMap = {
         };
     },
 };
+
+function parseIntOrNull(v: string | string[] | undefined) {
+    if (v === undefined) return null;
+    const parsed = parseInt(firstParam(v));
+    return isNaN(parsed) ? null : parsed;
+}
+
+function parseFloatOrNull(v: string | string[] | undefined) {
+    if (v === undefined) return null;
+    const parsed = parseFloat(firstParam(v));
+    return isNaN(parsed) ? null : parsed;
+}
+
+function parseBooleanOrNull(v: string | string[] | undefined) {
+    const first = firstParam(v);
+    if (first === "true") return true;
+    if (first === "false") return false;
+    return null;
+}
+
+function parseTimestampOrNull(v: string | string[] | undefined) {
+    const timestamp = parseIntOrNull(v);
+    return timestamp === null ? null : new Date(timestamp);
+}
+
+function parseIsoDateTimeOrNull(v: string | string[] | undefined) {
+    // @ts-ignore
+    const dt = new Date(firstParam(v));
+    // @ts-ignore
+    return isNaN(dt) ? null : dt;
+}
