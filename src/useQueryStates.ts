@@ -101,9 +101,9 @@ function serializeAndRemoveUndefined<KeyMap extends UseQueryStatesKeyMap>(
     keys: KeyMap
 ) {
     const serialized: Record<string, WriteQueryValue> = {};
-    for (const [k, v] of Object.entries(keys))
-        if (k in vals) {
-            const serializedVal = (v.serialize || defaultSerializer)(vals);
+    for (const [k, v] of Object.entries(vals))
+        if (k in keys) {
+            const serializedVal = (keys[k].serialize || defaultSerializer)(v);
             if (serializedVal !== undefined) serialized[k] = serializedVal;
         }
 
