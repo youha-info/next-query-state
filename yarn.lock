@@ -332,10 +332,10 @@ nanoid@^3.3.4:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.4.tgz#730b67e3cd09e2deacf03c027c81c9d9dbc5e8ab"
   integrity sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==
 
-next-batch-router@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/next-batch-router/-/next-batch-router-0.0.2.tgz#594504b1794d0977ca681d5aad555aca0b02de5b"
-  integrity sha512-Zq04iyVtw6Jm+R0kIUpRZ/+O6J5K/rYsh9Y2CxUl/kZYGIbda0OT+6naVDr7fF2ovL01KGRqdvwh0H/lBzYGJQ==
+next-batch-router@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/next-batch-router/-/next-batch-router-0.0.3.tgz#8ec14286c49cb92d414d92a5d55af654c3084b1f"
+  integrity sha512-E4ktXgCL5j+FhOkm1Jq7V+QGFvMvvCsFKiVCYplvddh4MOhH23zfQWe5+K1ZLcfSAQG7KL0nUzo7ogiVwkXZ5A==
 
 next@^12.2.2:
   version "12.2.3"
