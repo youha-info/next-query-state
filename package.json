@@ -1,6 +1,6 @@
 {
   "name": "next-query-state",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Easy state management of URL query string for Next.js",
   "repository": "https://github.com/youha-info/next-query-state",
   "keywords": [
