@@ -15,7 +15,7 @@
     "baseUrl": ".",
     "outDir": "dist",
     "declaration": true,
-    "declarationDir": "./dist",
+    "declarationDir": "./dist/dts",
     "sourceMap": true,
     "allowJs": true,
     "skipLibCheck": true,

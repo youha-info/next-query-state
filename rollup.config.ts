@@ -19,7 +19,7 @@ const config = [
         ],
         plugins: [
             peerDepsExternal(),
-            typescript({ tsconfig: "./tsconfig.build.json" }),
+            typescript({ tsconfig: "./tsconfig.build.json", useTsconfigDeclarationDir: true }),
             commonjs({ include: "node_modules/**" }),
         ],
     },
