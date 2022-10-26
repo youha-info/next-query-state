@@ -27,9 +27,14 @@
   "module": "./dist/es/index.js",
   "types": "./dist/cjs/index.d.ts",
   "exports": {
-    "require": "./dist/cjs/index.js",
-    "import": "./dist/es/index.js",
-    "default": "./dist/es/index.js"
+    ".": {
+      "import": "./dist/es/index.js",
+      "default": "./dist/cjs/index.js"
+    },
+    "./nullableQueryTypes": {
+      "import": "./dist/es/nullableQueryTypes.js",
+      "default": "./dist/cjs/nullableQueryTypes.js"
+    }
   },
   "files": [
     "dist"
