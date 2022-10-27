@@ -21,7 +21,10 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "yarn clean && rollup -c",
-    "prepack": "yarn build"
+    "prepack": "yarn build && yarn movefiles",
+    "postpack": "yarn putbackfiles",
+    "movefiles": "mv ./dist/dts/nullableQueryTypes.d.ts ./",
+    "putbackfiles": "mv ./nullableQueryTypes.d.ts ./dist/dts"
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/es/index.js",
@@ -37,7 +40,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "nullableQueryTypes.d.ts"
   ],
   "dependencies": {
     "next-batch-router": "^0.0.3"
