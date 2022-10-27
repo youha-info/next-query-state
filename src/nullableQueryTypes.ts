@@ -1,11 +1,11 @@
 import { Serializers, WriteQueryValue } from "./defs";
 import { firstParam } from "./utils";
 
-export type NullableSerializersWithDefaultFactory<
-    T,
-    NoDefault = T | undefined
-> = Serializers<NoDefault> & {
-    withDefault: (defaultValue: T) => Serializers<T>;
+export type NullableSerializersWithDefaultFactory<T, NoDefault = T | undefined> = Serializers<
+    NoDefault,
+    NoDefault | undefined
+> & {
+    withDefault: (defaultValue: T) => Serializers<T, T | undefined>;
 };
 
 export type NullableQueryTypeMap = Readonly<{
