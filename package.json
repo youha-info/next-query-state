@@ -23,12 +23,11 @@
     "build": "yarn clean && rollup -c",
     "prepack": "yarn build && yarn movefiles",
     "postpack": "yarn putbackfiles",
-    "movefiles": "mv ./dist/dts/nullableQueryTypes.d.ts ./",
-    "putbackfiles": "mv ./nullableQueryTypes.d.ts ./dist/dts"
+    "movefiles": "mv ./next-env.d.ts ./next-env.d.ts.temp && mv ./dist/dts/*.d.ts ./",
+    "putbackfiles": "mv ./*.d.ts ./dist/dts/ && mv ./next-env.d.ts.temp ./next-env.d.ts"
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/es/index.js",
-  "types": "./dist/dts/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/es/index.js",
@@ -41,7 +40,7 @@
   },
   "files": [
     "dist",
-    "nullableQueryTypes.d.ts"
+    "*.d.ts"
   ],
   "dependencies": {
     "next-batch-router": "^0.0.3"
