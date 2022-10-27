@@ -66,7 +66,7 @@ export type NullableQueryTypeMap = Readonly<{
      */
     array<ItemType>(
         itemSerializers: Serializers<ItemType>
-    ): NullableSerializersWithDefaultFactory<ItemType[] | null>;
+    ): NullableSerializersWithDefaultFactory<Exclude<ItemType, undefined>[] | null>;
 
     /**
      * A comma-separated list of items.
@@ -78,7 +78,7 @@ export type NullableQueryTypeMap = Readonly<{
     delimitedArray<ItemType>(
         itemSerializers: Serializers<ItemType>,
         separator?: string
-    ): NullableSerializersWithDefaultFactory<ItemType[] | null>;
+    ): NullableSerializersWithDefaultFactory<Exclude<ItemType, undefined>[] | null>;
 }>;
 
 export const nullableQueryTypes: NullableQueryTypeMap = {
@@ -174,7 +174,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
             const arr = Array.isArray(v) ? v : [v];
             const parsedValues = arr
                 .map(itemSerializers.parse)
-                .filter((x) => x !== undefined) as ItemType[];
+                .filter((x) => x !== undefined) as Exclude<ItemType, undefined>[];
             return parsedValues.length ? parsedValues : undefined;
         };
         return {
@@ -205,7 +205,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
             const parsedValues = firstParam(v)
                 .split(separator)
                 .map(itemSerializers.parse)
-                .filter((x) => x !== undefined) as ItemType[];
+                .filter((x) => x !== undefined) as Exclude<ItemType, undefined>[];
             return parsedValues.length ? parsedValues : undefined;
         };
         return {

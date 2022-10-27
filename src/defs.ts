@@ -89,7 +89,7 @@ export type QueryTypeMap = Readonly<{
      */
     array<ItemType>(
         itemSerializers: Serializers<ItemType>
-    ): SerializersWithDefaultFactory<ItemType[]>;
+    ): SerializersWithDefaultFactory<Exclude<ItemType, null>[]>;
 
     /**
      * A comma-separated list of items.
@@ -101,7 +101,7 @@ export type QueryTypeMap = Readonly<{
     delimitedArray<ItemType>(
         itemSerializers: Serializers<ItemType>,
         separator?: string
-    ): SerializersWithDefaultFactory<ItemType[]>;
+    ): SerializersWithDefaultFactory<Exclude<ItemType, null>[]>;
 }>;
 
 export const queryTypes: QueryTypeMap = {
@@ -209,7 +209,7 @@ export const queryTypes: QueryTypeMap = {
             const arr = Array.isArray(v) ? v : [v];
             const parsedValues = arr
                 .map(itemSerializers.parse)
-                .filter((x) => x !== null) as ItemType[];
+                .filter((x) => x !== null) as Exclude<ItemType, null>[];
             return parsedValues.length ? parsedValues : null;
         };
         return {
@@ -235,7 +235,7 @@ export const queryTypes: QueryTypeMap = {
             const parsedValues = firstParam(v)
                 .split(separator)
                 .map(itemSerializers.parse)
-                .filter((x) => x !== null) as ItemType[];
+                .filter((x) => x !== null) as Exclude<ItemType, null>[];
             return parsedValues.length ? parsedValues : null;
         };
         return {
