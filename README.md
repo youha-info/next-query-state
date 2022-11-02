@@ -117,8 +117,7 @@ const MyApp = ({ Component, pageProps }) => (
 `BatchRouterProvider` must be provided as above!
 
 ```ts
-import { queryTypes } from "src/defs";
-import { useQueryState } from "src/useQueryState";
+import { useQueryState, queryTypes } from "next-query-state";
 
 export default function TestPage() {
     // Most basic usage, only designating parameter key
