@@ -1,5 +1,4 @@
-import { queryTypes } from "src/defs";
-import { useQueryState } from "src/useQueryState";
+import { useQueryState, queryTypes } from "src";
 
 export default function TestPage() {
     // Most basic usage, only designating parameter key
