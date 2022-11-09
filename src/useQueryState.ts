@@ -5,7 +5,6 @@ import {
     HistoryOptions,
     NextQueryValue,
     Serializers,
-    TransitionOptions,
     UpdateOptions,
 } from "./defs";
 import { defaultSerializer, firstStringParser } from "./utils";
