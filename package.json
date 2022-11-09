@@ -24,7 +24,11 @@
     "prepack": "yarn build && yarn movefiles",
     "postpack": "yarn putbackfiles",
     "movefiles": "mv ./next-env.d.ts ./next-env.d.ts.temp && mv ./dist/dts/*.d.ts ./",
-    "putbackfiles": "mv ./*.d.ts ./dist/dts/ && mv ./next-env.d.ts.temp ./next-env.d.ts"
+    "putbackfiles": "mv ./*.d.ts ./dist/dts/ && mv ./next-env.d.ts.temp ./next-env.d.ts",
+    "dev": "conc -n NEXT,CYPRESS 'next -p 3051' 'cypress open'",
+    "e2e": "next build && yarn e2e:run",
+    "e2e:run": "conc -n NEXT,CYPRESS --kill-others --success command-CYPRESS 'next start -p 3051' 'yarn cypress:ci'",
+    "cypress:ci": "cypress run --headless --config screenshotOnRunFailure=false,video=false"
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/es/index.js",
@@ -53,6 +57,8 @@
     "@rollup/plugin-commonjs": "^22.0.1",
     "@types/node": "^18.0.6",
     "@types/react": "^18.0.15",
+    "concurrently": "^7.5.0",
+    "cypress": "^11.0.0",
     "next": "^12.2.2",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
