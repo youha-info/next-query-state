@@ -1,4 +1,4 @@
-import { BatchRouterTypes } from "next-batch-router/dist/cjs/BatchRouterCore";
+import { BatchRouterTypes } from "next-batch-router";
 import { firstParam } from "./utils";
 
 export type TransitionOptions = BatchRouterTypes.TransitionOptions;
