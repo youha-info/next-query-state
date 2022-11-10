@@ -1,12 +1,7 @@
 import { useBatchRouter } from "next-batch-router";
 import { useRouter } from "next/router";
 import React from "react";
-import {
-    HistoryOptions,
-    NextQueryValue,
-    Serializers,
-    UpdateOptions,
-} from "./defs";
+import { HistoryOptions, NextQueryValue, Serializers, UpdateOptions } from "./defs";
 import { defaultSerializer, firstStringParser } from "./utils";
 
 type UseQueryStateOptions = {
@@ -32,12 +27,22 @@ type UseQueryStateReturn<T, WT> = [
     (value: WT | ((prev: T) => WT), options?: UpdateOptions) => Promise<boolean | undefined>
 ];
 
-/** Variation with no parser, serializer.
- * Uses default serializer of type `string | string[] | null`
+/**
+ * Hook similar to useState but stores state in the URL query string.
+ *
+ * If serializers are not supplied, returns the first string value of the query param with the key.
+ * Update function set the URL with string | string[] | null.
  */
 export function useQueryState(
     key: string
-): UseQueryStateReturn<string | string[] | null, string | string[] | null | undefined>;
+): UseQueryStateReturn<string | null, string | string[] | null | undefined>;
+/**
+ * Hook similar to useState but stores state in the URL query string.
+ *
+ * @param key Key to use in the query string.
+ * @param serializers Object that consists of `parse` and `serialize` functions that transforms the state from and to the URL string.
+ * @param options Defines history mode and dynamic serializer option.
+ */
 export function useQueryState<T, WT>(
     key: string,
     serializers?: Serializers<T, WT>,

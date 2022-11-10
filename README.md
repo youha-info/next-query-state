@@ -176,7 +176,7 @@ When you use `const [foo, setFoo] = useQueryState("foo")`, `foo` is type `T`, an
 `WT`: The **write type** of query parameter.
 
 -   It is a superset of `T`, and usually includes `null` and `undefined`.
-    The type and behavior is determined by the serializer function, as the serializer turns `WT` into `WriteQueryValue` to be passed on to `next-batch-router`.
+-   The type and behavior is determined by the serializer function, as the serializer turns `WT` into `WriteQueryValue` to be passed on to `next-batch-router`. It is fully customizable.
 
 `NextQueryValue`: Parsed query string data that is provided by `next/router`. `parse` function converts this to `T`.
 
@@ -184,7 +184,7 @@ When you use `const [foo, setFoo] = useQueryState("foo")`, `foo` is type `T`, an
 
 `WriteQueryValue`: Type that's passed to `next-batch-router` to change the URL. `serialize` function converts `WT` to this.
 
--   `string | string[] | number | number[] | boolean | boolean[] | null | undefined`
+-   `string | number | boolean | (string | number | boolean)[] | null | undefined`
 
 -   `null` is used to remove from url. `undefined` is ignored and leaves value as is.
 -   Array creates multiple key=value in the URL with the same key.
@@ -205,6 +205,7 @@ The types are converted in this direction, forming a loop: `NextQueryValue` -(pa
 
 `serializers`?: `{ parse?: function, serialize?: function }`
 
+-   Object that consists of `parse` and `serialize` functions that transforms the state from and to the URL string.
 -   This parameter is fixed on the first hook call, and should not be changed unless `dynamic` option is set to true.
 -   You won't likely create this object yourself, but use one of the presets in `queryTypes` or `nullableQueryTypes` like `useQueryState("foo", queryTypes.string)`.
     See the below section about presets.

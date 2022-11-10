@@ -38,7 +38,8 @@ export type SetValues<T extends UseQueryStatesKeyMap> = (
 export type UseQueryStatesReturn<T extends UseQueryStatesKeyMap> = [Values<T>, SetValues<T>];
 
 /**
- * Synchronise multiple query string arguments to React state in Next.js
+ * Hook that stores multiple states in the URL query string.
+ * Can be seen as a group of multiple useQueryString hooks.
  *
  * WARNING: This function is not optimized. No memoization happens inside.
  * This function is intended to be used for cases like below.
