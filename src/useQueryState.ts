@@ -73,7 +73,7 @@ export function useQueryState<T, WT>(
             const queryUpdater = isUpdaterFunction(stateUpdater)
                 ? (prevObj: Record<string, NextQueryValue>) => {
                       const newVal = serialize(stateUpdater(parse(prevObj[key])));
-                      // Manually merge. Keep prev valud if new is undefined.
+                      // Manually merge. Keep prev value if new is undefined.
                       if (newVal !== undefined) return { ...prevObj, [key]: newVal };
                       return prevObj;
                   }
