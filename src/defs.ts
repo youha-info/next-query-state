@@ -145,7 +145,7 @@ export const queryTypes: QueryTypeMap = {
     },
     timestamp: {
         parse: parseTimestampOrNull,
-        serialize: (v) => (v == null ? v : v.valueOf().toString()),
+        serialize: (v) => (v == null ? v : isNaN(v.valueOf()) ? null : v.valueOf().toString()),
         withDefault(defaultValue) {
             return {
                 parse: (v) => parseTimestampOrNull(v) ?? defaultValue,
@@ -155,7 +155,7 @@ export const queryTypes: QueryTypeMap = {
     },
     isoDateTime: {
         parse: parseIsoDateTimeOrNull,
-        serialize: (v) => (v == null ? v : v.toISOString()),
+        serialize: (v) => (v == null ? v : isNaN(v.valueOf()) ? null : v.toISOString()),
         withDefault(defaultValue) {
             return {
                 parse: (v) => parseIsoDateTimeOrNull(v) ?? defaultValue,
@@ -267,7 +267,7 @@ function parseFloatOrNull(v: string | string[] | undefined) {
 }
 
 function parseBooleanOrNull(v: string | string[] | undefined) {
-    if(v === undefined) return null;
+    if (v === undefined) return null;
     const first = firstParam(v);
     if (first.toLowerCase() === "true") return true;
     if (first.toLowerCase() === "false") return false;
@@ -276,12 +276,13 @@ function parseBooleanOrNull(v: string | string[] | undefined) {
 
 function parseTimestampOrNull(v: string | string[] | undefined) {
     const timestamp = parseFlooredFloatOrNull(v);
-    return timestamp === null ? null : new Date(timestamp);
+    if (timestamp === null) return null;
+    const dt = new Date(timestamp);
+    return isNaN(dt.valueOf()) ? null : dt;
 }
 
 function parseIsoDateTimeOrNull(v: string | string[] | undefined) {
-    // @ts-ignore
+    if (v === undefined) return null;
     const dt = new Date(firstParam(v));
-    // @ts-ignore
-    return isNaN(dt) ? null : dt;
+    return isNaN(dt.valueOf()) ? null : dt;
 }

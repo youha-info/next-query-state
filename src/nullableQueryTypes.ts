@@ -123,7 +123,14 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
     },
     timestamp: {
         parse: (v) => (v === "\0" ? null : parseTimestampOrUndef(v)),
-        serialize: (v) => (v === undefined ? null : v === null ? "\0" : v.valueOf().toString()),
+        serialize: (v) =>
+            v === undefined
+                ? null
+                : v === null
+                ? "\0"
+                : isNaN(v.valueOf())
+                ? null
+                : v.valueOf().toString(),
         withDefault(defaultValue) {
             return {
                 parse: (v) => (v === "\0" ? null : parseTimestampOrUndef(v) ?? defaultValue),
@@ -133,7 +140,14 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
     },
     isoDateTime: {
         parse: (v) => (v === "\0" ? null : parseIsoDateTimeOrUndef(v)),
-        serialize: (v) => (v === undefined ? null : v === null ? "\0" : v.toISOString()),
+        serialize: (v) =>
+            v === undefined
+                ? null
+                : v === null
+                ? "\0"
+                : isNaN(v.valueOf())
+                ? null
+                : v.toISOString(),
         withDefault(defaultValue) {
             return {
                 parse: (v) => (v === "\0" ? null : parseIsoDateTimeOrUndef(v) ?? defaultValue),
@@ -247,12 +261,13 @@ function parseBooleanOrUndef(v: string | string[] | undefined) {
 
 function parseTimestampOrUndef(v: string | string[] | undefined) {
     const timestamp = parseFlooredFloatOrUndef(v);
-    return timestamp === undefined ? undefined : new Date(timestamp);
+    if (timestamp === undefined) return undefined;
+    const dt = new Date(timestamp);
+    return isNaN(dt.valueOf()) ? undefined : dt;
 }
 
 function parseIsoDateTimeOrUndef(v: string | string[] | undefined) {
-    // @ts-ignore
+    if (v === undefined) return undefined;
     const dt = new Date(firstParam(v));
-    // @ts-ignore
-    return isNaN(dt) ? undefined : dt;
+    return isNaN(dt.valueOf()) ? undefined : dt;
 }
