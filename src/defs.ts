@@ -267,9 +267,10 @@ function parseFloatOrNull(v: string | string[] | undefined) {
 }
 
 function parseBooleanOrNull(v: string | string[] | undefined) {
+    if(v === undefined) return null;
     const first = firstParam(v);
-    if (first === "true") return true;
-    if (first === "false") return false;
+    if (first.toLowerCase() === "true") return true;
+    if (first.toLowerCase() === "false") return false;
     return null;
 }
 

@@ -238,9 +238,10 @@ function parseFloatOrUndef(v: string | string[] | undefined) {
 }
 
 function parseBooleanOrUndef(v: string | string[] | undefined) {
+    if (v === undefined) return undefined;
     const first = firstParam(v);
-    if (first === "true") return true;
-    if (first === "false") return false;
+    if (first.toLowerCase() === "true") return true;
+    if (first.toLowerCase() === "false") return false;
     return undefined;
 }
 
