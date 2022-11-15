@@ -90,7 +90,7 @@ export type NullableQueryTypeMap = Readonly<{
 
 export const nullableQueryTypes: NullableQueryTypeMap = {
     string: {
-        parse: (v) => (v === "\0" ? null : firstParam(v)),
+        parse: (v) => (firstParam(v) === "\0" ? null : firstParam(v)),
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : v),
         withDefault(defaultValue) {
             return {
@@ -100,7 +100,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         },
     },
     integer: {
-        parse: (v) => (v === "\0" ? null : parseFlooredFloatOrUndef(v)),
+        parse: (v) => (firstParam(v) === "\0" ? null : parseFlooredFloatOrUndef(v)),
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : Math.floor(v).toFixed()),
         withDefault(defaultValue) {
             return {
@@ -110,7 +110,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         },
     },
     float: {
-        parse: (v) => (v === "\0" ? null : parseFloatOrUndef(v)),
+        parse: (v) => (firstParam(v) === "\0" ? null : parseFloatOrUndef(v)),
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : v.toString()),
         withDefault(defaultValue) {
             return {
@@ -120,7 +120,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         },
     },
     boolean: {
-        parse: (v) => (v === "\0" ? null : parseBooleanOrUndef(v)),
+        parse: (v) => (firstParam(v) === "\0" ? null : parseBooleanOrUndef(v)),
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : v ? "true" : "false"),
         withDefault(defaultValue) {
             return {
@@ -130,7 +130,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         },
     },
     timestamp: {
-        parse: (v) => (v === "\0" ? null : parseTimestampOrUndef(v)),
+        parse: (v) => (firstParam(v) === "\0" ? null : parseTimestampOrUndef(v)),
         serialize: (v) =>
             v === undefined
                 ? null
@@ -147,7 +147,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         },
     },
     isoDateTime: {
-        parse: (v) => (v === "\0" ? null : parseIsoDateTimeOrUndef(v)),
+        parse: (v) => (firstParam(v) === "\0" ? null : parseIsoDateTimeOrUndef(v)),
         serialize: (v) =>
             v === undefined
                 ? null
@@ -165,8 +165,9 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
     },
     stringEnum<Enum extends string>(validValues: Enum[]) {
         const parse = (v: string | string[] | undefined) => {
-            if (v === "\0") return null;
-            if (v !== undefined) {
+            const val = firstParam(v);
+            if (val === "\0") return null;
+            if (val !== undefined) {
                 const asEnum = firstParam(v) as Enum;
                 if (validValues.includes(asEnum)) return asEnum;
             }
@@ -191,6 +192,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         const parse = (v: NextQueryValue) => {
             if (v === undefined) return undefined;
             try {
+                // null is represented with string "null"
                 return JSON.parse(firstParam(v)) as T;
             } catch {
                 return undefined;
@@ -199,10 +201,8 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         return {
             parse,
             serialize: (v) =>
-                (v === undefined ? null : v === null ? "\0" : JSON.stringify(v)) as
-                    | string
-                    | null
-                    | undefined,
+                // null is represented with string "null"
+                (v === undefined ? null : JSON.stringify(v)) as string | null | undefined,
             withDefault(defaultValue) {
                 return {
                     parse: (v) => {
