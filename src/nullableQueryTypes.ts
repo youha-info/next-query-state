@@ -1,9 +1,8 @@
 import { Serializers, WriteQueryValue } from "./defs";
 import { firstParam } from "./utils";
 
-export type NullableSerializersWithDefaultFactory<T, NoDefault = T | undefined> = Serializers<
-    NoDefault,
-    NoDefault | undefined
+export type NullableSerializersWithDefaultFactory<T, NoDefault = T | undefined> = Required<
+    Serializers<NoDefault, NoDefault | undefined>
 > & {
     withDefault: (defaultValue: T) => Serializers<T, T | undefined>;
 };

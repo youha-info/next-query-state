@@ -1,5 +1,5 @@
 import { BatchRouterTypes } from "next-batch-router";
-import { firstParam } from "./utils";
+import { defaultSerializer, firstParam } from "./utils";
 
 export type TransitionOptions = BatchRouterTypes.TransitionOptions;
 export type HistoryOptions = "replace" | "push";
@@ -16,9 +16,8 @@ export type Serializers<T, WT = T> = {
     serialize?: (value: WT) => WriteQueryValue;
 };
 
-export type SerializersWithDefaultFactory<T, NoDefault = T | null> = Serializers<
-    NoDefault,
-    NoDefault | null | undefined
+export type SerializersWithDefaultFactory<T, NoDefault = T | null> = Required<
+    Serializers<NoDefault, NoDefault | null | undefined>
 > & {
     withDefault: (defaultValue: T) => Serializers<T, T | null | undefined>;
 };
@@ -107,6 +106,7 @@ export type QueryTypeMap = Readonly<{
 export const queryTypes: QueryTypeMap = {
     string: {
         parse: (v) => (v === undefined ? null : firstParam(v)),
+        serialize: (v) => v,
         withDefault(defaultValue) {
             return {
                 parse: (v) => (v === undefined ? defaultValue : firstParam(v)),
