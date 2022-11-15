@@ -1,4 +1,4 @@
-import { Serializers, WriteQueryValue } from "./defs";
+import { NextQueryValue, Serializers, WriteQueryValue } from "./defs";
 import { firstParam } from "./utils";
 
 export type NullableSerializersWithDefaultFactory<T, NoDefault = T | undefined> = Required<
@@ -56,6 +56,14 @@ export type NullableQueryTypeMap = Readonly<{
     stringEnum<Enum extends string>(
         validValues: Enum[] | readonly Enum[]
     ): NullableSerializersWithDefaultFactory<Enum | null>;
+
+    /**
+     * Encode any object shape into the querystring value as JSON.
+     * Value is URI-encoded by next.js for safety, so it may not look nice in the URL.
+     * Note: you may want to use `useQueryStates` for finer control over
+     * multiple related query keys.
+     */
+    json<T>(): NullableSerializersWithDefaultFactory<T>;
 
     /**
      * List of items represented with duplicate keys.
@@ -173,6 +181,33 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
                     parse: (v) => {
                         const value = parse(v);
                         return value === undefined ? defaultValue : value;
+                    },
+                    serialize: this.serialize,
+                };
+            },
+        };
+    },
+    json<T>() {
+        const parse = (v: NextQueryValue) => {
+            if (v === undefined) return undefined;
+            try {
+                return JSON.parse(firstParam(v)) as T;
+            } catch {
+                return undefined;
+            }
+        };
+        return {
+            parse,
+            serialize: (v) =>
+                (v === undefined ? null : v === null ? "\0" : JSON.stringify(v)) as
+                    | string
+                    | null
+                    | undefined,
+            withDefault(defaultValue) {
+                return {
+                    parse: (v) => {
+                        const parsed = parse(v);
+                        return parsed === undefined ? defaultValue : parsed;
                     },
                     serialize: this.serialize,
                 };
