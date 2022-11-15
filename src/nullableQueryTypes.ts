@@ -92,11 +92,11 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         },
     },
     integer: {
-        parse: (v) => (v === "\0" ? null : parseIntOrUndef(v)),
+        parse: (v) => (v === "\0" ? null : parseFlooredFloatOrUndef(v)),
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : Math.floor(v).toFixed()),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === "\0" ? null : parseIntOrUndef(v) ?? defaultValue),
+                parse: (v) => (v === "\0" ? null : parseFlooredFloatOrUndef(v) ?? defaultValue),
                 serialize: this.serialize,
             };
         },
@@ -225,10 +225,10 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
     },
 };
 
-function parseIntOrUndef(v: string | string[] | undefined) {
+function parseFlooredFloatOrUndef(v: string | string[] | undefined) {
     if (v === undefined) return undefined;
-    const parsed = parseInt(firstParam(v));
-    return isNaN(parsed) ? undefined : parsed;
+    const parsed = parseFloat(firstParam(v));
+    return isNaN(parsed) ? undefined : Math.floor(parsed);
 }
 
 function parseFloatOrUndef(v: string | string[] | undefined) {
@@ -245,7 +245,7 @@ function parseBooleanOrUndef(v: string | string[] | undefined) {
 }
 
 function parseTimestampOrUndef(v: string | string[] | undefined) {
-    const timestamp = parseIntOrUndef(v);
+    const timestamp = parseFlooredFloatOrUndef(v);
     return timestamp === undefined ? undefined : new Date(timestamp);
 }
 

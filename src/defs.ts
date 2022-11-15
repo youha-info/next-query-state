@@ -114,11 +114,11 @@ export const queryTypes: QueryTypeMap = {
         },
     },
     integer: {
-        parse: parseIntOrNull,
+        parse: parseFlooredFloatOrNull,
         serialize: (v) => (v == null ? v : Math.floor(v).toFixed()),
         withDefault(defaultValue) {
             return {
-                parse: (v) => parseIntOrNull(v) ?? defaultValue,
+                parse: (v) => parseFlooredFloatOrNull(v) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
@@ -254,10 +254,10 @@ export const queryTypes: QueryTypeMap = {
     },
 };
 
-function parseIntOrNull(v: string | string[] | undefined) {
+function parseFlooredFloatOrNull(v: string | string[] | undefined) {
     if (v === undefined) return null;
-    const parsed = parseInt(firstParam(v));
-    return isNaN(parsed) ? null : parsed;
+    const parsed = parseFloat(firstParam(v));
+    return isNaN(parsed) ? null : Math.floor(parsed);
 }
 
 function parseFloatOrNull(v: string | string[] | undefined) {
@@ -274,7 +274,7 @@ function parseBooleanOrNull(v: string | string[] | undefined) {
 }
 
 function parseTimestampOrNull(v: string | string[] | undefined) {
-    const timestamp = parseIntOrNull(v);
+    const timestamp = parseFlooredFloatOrNull(v);
     return timestamp === null ? null : new Date(timestamp);
 }
 
