@@ -242,6 +242,7 @@ export const queryTypes: QueryTypeMap = {
             parse,
             serialize: (v) => {
                 if (v == null) return v;
+                if (v.length === 0) return null;
                 return v.map(itemSerializers.serialize || String).join(separator);
             },
             withDefault(defaultValue) {

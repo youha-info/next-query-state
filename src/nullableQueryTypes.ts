@@ -222,7 +222,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         return {
             parse,
             serialize: (v) => {
-                if (v === undefined) return null;
+                if (v === undefined || v.length === 0) return null;
                 if (v === null) return "\0";
                 return v.map(itemSerializers.serialize || String).join(separator);
             },
