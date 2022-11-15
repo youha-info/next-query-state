@@ -115,7 +115,7 @@ export const queryTypes: QueryTypeMap = {
     },
     integer: {
         parse: parseIntOrNull,
-        serialize: (v) => (v == null ? v : Math.round(v).toFixed()),
+        serialize: (v) => (v == null ? v : Math.floor(v).toFixed()),
         withDefault(defaultValue) {
             return {
                 parse: (v) => parseIntOrNull(v) ?? defaultValue,

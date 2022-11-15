@@ -93,7 +93,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
     },
     integer: {
         parse: (v) => (v === "\0" ? null : parseIntOrUndef(v)),
-        serialize: (v) => (v === undefined ? null : v === null ? "\0" : Math.round(v).toFixed()),
+        serialize: (v) => (v === undefined ? null : v === null ? "\0" : Math.floor(v).toFixed()),
         withDefault(defaultValue) {
             return {
                 parse: (v) => (v === "\0" ? null : parseIntOrUndef(v) ?? defaultValue),
