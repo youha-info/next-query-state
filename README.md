@@ -282,6 +282,8 @@ The types are converted in this direction, forming a loop: `NextQueryValue` -(pa
 
 `undefined` only exists in `WT`, and means 'leave value as is'
 
+If param exists multiple times(`?foo=1&foo=2`), array serializer reads it as array, and other serializers only read the first one.
+
 When you use `withDefault()`, since there is a default value, `null` is excluded from `T`.
 However, it still exists in `WT` so you can remove key from the URL to set value to default value.
 
