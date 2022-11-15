@@ -4,7 +4,7 @@ import { firstParam } from "./utils";
 export type NullableSerializersWithDefaultFactory<T, NoDefault = T | undefined> = Required<
     Serializers<NoDefault, NoDefault | undefined>
 > & {
-    withDefault: (defaultValue: T) => Serializers<T, T | undefined>;
+    withDefault: (defaultValue: T) => Required<Serializers<T, T | undefined>>;
 };
 
 export type NullableQueryTypeMap = Readonly<{

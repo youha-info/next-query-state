@@ -19,7 +19,7 @@ export type Serializers<T, WT = T> = {
 export type SerializersWithDefaultFactory<T, NoDefault = T | null> = Required<
     Serializers<NoDefault, NoDefault | null | undefined>
 > & {
-    withDefault: (defaultValue: T) => Serializers<T, T | null | undefined>;
+    withDefault: (defaultValue: T) => Required<Serializers<T, T | null | undefined>>;
 };
 
 export type QueryTypeMap = Readonly<{
@@ -110,6 +110,7 @@ export const queryTypes: QueryTypeMap = {
         withDefault(defaultValue) {
             return {
                 parse: (v) => (v === undefined ? defaultValue : firstParam(v)),
+                serialize:this.serialize
             };
         },
     },
