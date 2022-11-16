@@ -94,7 +94,8 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : v),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === undefined ? defaultValue : firstParam(v)),
+                parse: (v) =>
+                    firstParam(v) === "\0" ? null : v === undefined ? defaultValue : firstParam(v),
                 serialize: this.serialize,
             };
         },
@@ -104,7 +105,8 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : Math.floor(v).toFixed()),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === "\0" ? null : parseFlooredFloatOrUndef(v) ?? defaultValue),
+                parse: (v) =>
+                    firstParam(v) === "\0" ? null : parseFlooredFloatOrUndef(v) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
@@ -114,7 +116,8 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : v.toString()),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === "\0" ? null : parseFloatOrUndef(v)) ?? defaultValue,
+                parse: (v) =>
+                    (firstParam(v) === "\0" ? null : parseFloatOrUndef(v)) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
@@ -124,7 +127,8 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         serialize: (v) => (v === undefined ? null : v === null ? "\0" : v ? "true" : "false"),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === "\0" ? null : parseBooleanOrUndef(v) ?? defaultValue),
+                parse: (v) =>
+                    firstParam(v) === "\0" ? null : parseBooleanOrUndef(v) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
@@ -141,7 +145,8 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
                 : v.valueOf().toString(),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === "\0" ? null : parseTimestampOrUndef(v) ?? defaultValue),
+                parse: (v) =>
+                    firstParam(v) === "\0" ? null : parseTimestampOrUndef(v) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
@@ -158,7 +163,8 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
                 : v.toISOString(),
         withDefault(defaultValue) {
             return {
-                parse: (v) => (v === "\0" ? null : parseIsoDateTimeOrUndef(v) ?? defaultValue),
+                parse: (v) =>
+                    firstParam(v) === "\0" ? null : parseIsoDateTimeOrUndef(v) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
