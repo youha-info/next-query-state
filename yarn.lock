@@ -2610,10 +2610,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==
 
-next-batch-router@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/next-batch-router/-/next-batch-router-1.0.0.tgz#d8955b840e0f19bccda9f53385cd0331c789aa6f"
-  integrity sha512-muoqNbjAwVhmJR7iXkkETn0wBvvvpazoc4g0hjFK9aaENOy92jESA2/IE+MDDtFUMJF+GY7RfwG9inbAcKGUSw==
+next-batch-router@1.0.0-pre.2:
+  version "1.0.0-pre.2"
+  resolved "https://registry.yarnpkg.com/next-batch-router/-/next-batch-router-1.0.0-pre.2.tgz#4ddfe2df0383def03f3d3f0dd9837c81878ceaba"
+  integrity sha512-TyKu0gh3AvNyxwKfTqaI8EVCPM5BC1bSjrIsANb/zeKAkDDWQjgs8j+HFf03R82OrMGOhD4Twxrwih1gCGDUZA==
 
 next@^12.2.2:
   version "12.3.3"
