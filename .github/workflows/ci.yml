@@ -1,12 +1,12 @@
-name: Publish to npm registry
+name: Continuous Integration
 
-on: 
+on:
   push:
-    branches:
+    branches-ignore:
       - main
 
 jobs:
-  publish:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,6 +16,3 @@ jobs:
       - run: yarn install
       - run: yarn test
       - run: yarn e2e
-      - uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
