@@ -1,4 +1,7 @@
 # next-query-state
+[![NPM](https://img.shields.io/npm/v/next-query-state?color=red)](https://www.npmjs.com/package/next-query-state)
+[![Bundle size](https://img.shields.io/bundlephobia/minzip/next-query-state)](https://bundlephobia.com/package/next-query-state)
+[![GitHub license](https://img.shields.io/badge/license-MIT-green)](https://github.com/youha-info/next-query-state/blob/main/LICENSE)
 
 Easy state management of URL query string for Next.js
 
