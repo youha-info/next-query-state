@@ -117,7 +117,7 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
         withDefault(defaultValue) {
             return {
                 parse: (v) =>
-                    (firstParam(v) === "\0" ? null : parseFloatOrUndef(v)) ?? defaultValue,
+                    firstParam(v) === "\0" ? null : parseFloatOrUndef(v) ?? defaultValue,
                 serialize: this.serialize,
             };
         },
