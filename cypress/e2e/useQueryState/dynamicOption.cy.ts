@@ -5,11 +5,13 @@ describe("useQueryState non dynamic memoization behavior", () => {
         cy.visit(
             TEST_URL + `/tests/useQueryState/nonDynamicTest?val=${encodeURIComponent('{"a":2}')}`
         );
-        cy.get("#value").should("have.text", JSON.stringify({ a: 1 }));
-        cy.get("#equality").should(
-            "have.text",
-            JSON.stringify({ valueEq: true, setValueEq: true })
-        );
+        if (Cypress.env("CYPRESS_STRICT")) {
+            cy.get("#value").should("have.text", JSON.stringify({ a: 1 }));
+            cy.get("#equality").should(
+                "have.text",
+                JSON.stringify({ valueEq: true, setValueEq: true })
+            );
+        }
 
         cy.wait(50); // wait for next frame. value is changed
         cy.get("#value").should("have.text", JSON.stringify({ a: 2 }));
@@ -33,6 +35,7 @@ describe("useQueryState non dynamic memoization behavior", () => {
                     '{"a":2}'
                 )}&val2=${encodeURIComponent('{"a":10}')}`
         );
+
         cy.wait(50); // wait for next frame. value is changed
         cy.get("#value").should("have.text", JSON.stringify({ a: 2 }));
 
@@ -49,6 +52,7 @@ describe("useQueryState non dynamic memoization behavior", () => {
         cy.visit(TEST_URL);
         cy.visit(TEST_URL + "/tests/useQueryState/nonDynamicTest");
         cy.wait(50); // wait for next frame.
+
         cy.get("#updateValue").click();
         cy.get("#value").should("have.text", JSON.stringify({ a: 2 }));
 
@@ -85,6 +89,7 @@ describe("useQueryState dynamic option", () => {
     it("Serializers can't be changed if dynamic is false", () => {
         cy.visit(TEST_URL + "/tests/useQueryState/dynamicTest?dynamic=false");
         cy.wait(50); // wait for next frame.
+
         cy.get("#value").should("have.text", JSON.stringify({ a: 1 }));
 
         // Alter parser by changing default value
@@ -101,6 +106,7 @@ describe("useQueryState dynamic option", () => {
     it("Serializers can be changed if dynamic is true", () => {
         cy.visit(TEST_URL + "/tests/useQueryState/dynamicTest");
         cy.wait(50); // wait for next frame.
+        
         cy.get("#value").should("have.text", JSON.stringify({ a: 1 }));
 
         // Alter parser by changing default value

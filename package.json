@@ -27,8 +27,11 @@
     "putbackfiles": "mv ./*.d.ts ./dist/dts/ && mv ./next-env.d.ts.temp ./next-env.d.ts",
     "test": "jest --verbose",
     "dev": "conc -n NEXT,CYPRESS 'next -p 3051' 'cypress open'",
+    "dev:strict": "conc -n NEXT,CYPRESS 'next -p 3051' 'cypress open --env CYPRESS_STRICT=true'",
     "e2e": "next build && yarn e2e:run",
+    "e2e:strict": "next build && yarn e2e:run:strict",
     "e2e:run": "conc -n NEXT,CYPRESS --kill-others --success command-CYPRESS 'next start -p 3051' 'yarn cypress:ci'",
+    "e2e:run:strict": "conc -n NEXT,CYPRESS --kill-others --success command-CYPRESS 'next start -p 3051' 'yarn cypress:ci --env CYPRESS_STRICT=true'",
     "cypress:ci": "cypress run --headless --config screenshotOnRunFailure=false,video=false"
   },
   "main": "./dist/cjs/index.js",
