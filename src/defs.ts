@@ -82,7 +82,7 @@ export type QueryTypeMap = Readonly<{
 
     /**
      * List of items represented with duplicate keys.
-     * Items are URI-encoded for safety, so they may not look nice in the URL.
+     * Items are URI-encoded by next.js for safety, so they may not look nice in the URL.
      *
      * @param itemSerializers Serializers for each individual item in the array
      */
@@ -92,7 +92,7 @@ export type QueryTypeMap = Readonly<{
 
     /**
      * A comma-separated list of items.
-     * Items are URI-encoded for safety, so they may not look nice in the URL.
+     * Items are URI-encoded by next.js for safety, so they may not look nice in the URL.
      *
      * @param itemSerializers Serializers for each individual item in the array
      * @param separator The character to use to separate items (default ',')
