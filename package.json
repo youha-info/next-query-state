@@ -49,7 +49,7 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "next-batch-router": "1.0.0-pre.2"
+    "next-batch-router": "1.0.0"
   },
   "peerDependencies": {
     "next": "*"
