@@ -366,9 +366,6 @@ For most cases, using `useQueryState` is recommended, and `useQueryStates` is in
 
 <br/>
 
-## To-Do
-
-1. Memoize update function of `useQueryState` so that it doesn't go stale.
 
 ## Credits
 
