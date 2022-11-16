@@ -234,7 +234,6 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
             parse,
             serialize: (v) => {
                 if (v === undefined) return null;
-                if (v === null) return "\0";
                 return v
                     .map(itemSerializers.serialize || String)
                     .filter((v) => v != null) as WriteQueryValue;
@@ -264,7 +263,6 @@ export const nullableQueryTypes: NullableQueryTypeMap = {
             parse,
             serialize: (v) => {
                 if (v === undefined || v.length === 0) return null;
-                if (v === null) return "\0";
                 return v.map(itemSerializers.serialize || String).join(separator);
             },
             withDefault(defaultValue) {
